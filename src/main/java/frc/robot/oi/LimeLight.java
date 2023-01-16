@@ -1,8 +1,8 @@
 package frc.robot.oi;
 
-
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -60,9 +60,10 @@ public class LimeLight {
 
     private boolean connected = false;
 
-    private Translation3d tran3d = new Translation3d();
+    private Translation3d tl3d = new Translation3d();
     private Rotation3d r3d = new Rotation3d();
-    private Pose3d p3d = new Pose3d();
+    private Transform3d tf3d = new Transform3d();
+    private Pose3d p3d;
     private CamMode currentCamMode = CamMode.kdriver;
 
     private StreamType currentStreamType = StreamType.kStandard;
@@ -70,6 +71,8 @@ public class LimeLight {
     public LimeLightReflective ref;
 
     private double _heartBeatPeriod = 0.5;
+
+    private double latencyLast = 0;
 
     public enum CamMode {
         kvision,
@@ -83,7 +86,10 @@ public class LimeLight {
     }
 
     class PeriodicRunnable implements java.lang.Runnable {
-        NetworkTableEntry l;
+
+        private int testCount;
+        private int testCountLimitCheck = 3;
+        private double tempLatency;
 
         public void run() {
 
@@ -93,9 +99,23 @@ public class LimeLight {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            l = m_table.getEntry("tl");
-            connected = l.exists();
+
+            tempLatency = getPipelineLatency();
+
+            if (tempLatency == latencyLast) {
+                testCount++;
+            } else {
+                latencyLast = tempLatency;
+                testCount = 0;
+                connected = true;
+            }
+
+            if (testCount > testCountLimitCheck) {
+                connected = false;
+            }
+
         }
+
     }
 
     Notifier _heartBeat = new Notifier(new PeriodicRunnable());
@@ -248,10 +268,10 @@ public class LimeLight {
     /**
      * Returns pose of the April Tag
      * 
-     * @return Pose3d
+     * @return Transform3d
      */
 
-    public Pose3d getRobotPose()
+    public Transform3d getRobotTransform()
 
     {
 
@@ -259,14 +279,15 @@ public class LimeLight {
         NetworkTableEntry value = m_table.getEntry("botpose");
 
         double[] result = value.getDoubleArray(temp);
+
         if (result.length == 6) {
 
-            tran3d = new Translation3d(result[0], result[1], result[2]);
+            tl3d = new Translation3d(result[0], result[1], result[2]);
             r3d = new Rotation3d(result[3], result[4], result[5]);
-            p3d = new Pose3d(tran3d, r3d);
+            tf3d = new Transform3d(tl3d, r3d);
         } else
-            p3d = new Pose3d();
-        return p3d;
+            tf3d = new Transform3d();
+        return tf3d;
     }
 
     /**
@@ -276,15 +297,15 @@ public class LimeLight {
      * 
      * @return
      */
-    public Pose3d getCamTran() {
+    public Transform3d getCamTran() {
         double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
         NetworkTableEntry value = m_table.getEntry("camtran");
         double[] result = value.getDoubleArray(temp);
-        tran3d = new Translation3d(result[0], result[1], result[2]);
+        tl3d = new Translation3d(result[0], result[1], result[2]);
         r3d = new Rotation3d(result[3], result[4], result[5]);
-        p3d = new Pose3d(tran3d, r3d);
+        tf3d = new Transform3d(tl3d, r3d);
 
-        return p3d;
+        return tf3d;
 
     }
 
@@ -344,7 +365,7 @@ public class LimeLight {
         return currentStreamType;
     }
 
-     /**
+    /**
      * 
      * @param sizes
      * 
@@ -375,7 +396,6 @@ public class LimeLight {
         return fail;
     }
 
-
     public void takeSnapshot(int on) {
         NetworkTableEntry sn = m_table.getEntry("snapshot");
         sn.setValue(on);
@@ -403,9 +423,8 @@ public class LimeLight {
                 () -> (getCamMode() == CamMode.kvision));
     }
 
+    public Command ChangeCropRectangle(double[] sizes) {
 
-    public Command ChangeCropRectangle(double[]sizes){
-
-     return   new InstantCommand(()->setCropRectangle(sizes));
+        return new InstantCommand(() -> setCropRectangle(sizes));
     }
 }
