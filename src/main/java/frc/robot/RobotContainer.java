@@ -7,15 +7,18 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.oi.ShuffleboardLL;
 import frc.robot.oi.LimeLight.LedMode;
 import frc.robot.subsystems.LimelightVision;
 
 public class RobotContainer {
   final LimelightVision llvis = new LimelightVision();
+  private ShuffleboardLL cam1Disp;
 
-  private CommandXboxController testController = new CommandXboxController(0);
+  private CommandXboxController testController = new CommandXboxController(3);
 
   public RobotContainer() {
+    cam1Disp=new ShuffleboardLL(llvis.cam15);
     configureBindings();
   }
 

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -25,6 +26,9 @@ public class LimelightVision extends SubsystemBase {
 
 
   private int numCams = 1;
+
+  
+
 
   public static Map<String, Integer> cam15Pipelines;
   static {
@@ -81,5 +85,7 @@ public class LimelightVision extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("HeartBeat", cam15._heartBeatPeriod);
   }
+
+
 
 }
