@@ -12,14 +12,19 @@ import frc.robot.oi.LimeLight.LedMode;
 import frc.robot.subsystems.LimelightVision;
 
 public class RobotContainer {
-  final LimelightVision llvis = new LimelightVision();
+  final LimelightVision llvis;
   private ShuffleboardLL cam1Disp;
+  
 
   private CommandXboxController testController = new CommandXboxController(3);
 
   public RobotContainer() {
-    cam1Disp=new ShuffleboardLL(llvis.cam15);
+    llvis = new LimelightVision();
+    
+    cam1Disp = new ShuffleboardLL(llvis.cam15);
+  
     configureBindings();
+
   }
 
   private void configureBindings() {

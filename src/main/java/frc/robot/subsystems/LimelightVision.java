@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -21,14 +20,9 @@ public class LimelightVision extends SubsystemBase {
 
   public LimeLight cam15;
 
-
   public LimeLight cam16;
 
-
   private int numCams = 1;
-
-  
-
 
   public static Map<String, Integer> cam15Pipelines;
   static {
@@ -64,28 +58,23 @@ public class LimelightVision extends SubsystemBase {
 
   public LimelightVision() {
 
-    cam15 = new LimeLight("limelight-fifteen");
-  
+    cam15 = new LimeLight("limelight-tags");
+
     // cam15.setLEDMode(LedMode.kpipeLine);
     cam15.setCamMode(CamMode.kvision);
     cam15.setStream(StreamType.kStandard);
     cam15.setLEDMode(LedMode.kforceBlink);
-  
 
     if (numCams > 1) {
 
       cam16 = new LimeLight("limelight-sixteen");
 
-  
     }
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("HeartBeat", cam15._heartBeatPeriod);
   }
-
-
 
 }
