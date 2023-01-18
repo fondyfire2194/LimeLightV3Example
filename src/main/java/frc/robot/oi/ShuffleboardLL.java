@@ -6,7 +6,6 @@ package frc.robot.oi;
 
 import java.util.Map;
 
-
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -14,76 +13,77 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 /** Add your docs here. */
 public class ShuffleboardLL {
 
-        public ShuffleboardLL(LimeLight ll) {
+        private LimeLight m_ll;
 
-                ShuffleboardLayout col1_2 = Shuffleboard.getTab(ll.getName())
+        public ShuffleboardLL(LimeLight ll) {{
+
+                m_ll = ll;
+
+                String name = m_ll.getName();
+
+                ShuffleboardLayout col1_2 = Shuffleboard.getTab(name)
                                 .getLayout("A", BuiltInLayouts.kList).withPosition(0, 0)
                                 .withSize(2, 6).withProperties(Map.of("Label position", "LEFT"));
 
-                ShuffleboardLayout col3_4 = Shuffleboard.getTab(ll.getName())
+                ShuffleboardLayout col3_4 = Shuffleboard.getTab(name)
                                 .getLayout("B", BuiltInLayouts.kList).withPosition(2, 0)
                                 .withSize(2, 6).withProperties(Map.of("Label position", "LEFT"));
 
-                ShuffleboardLayout col5_6 = Shuffleboard.getTab(ll.getName())
+                ShuffleboardLayout col5_6 = Shuffleboard.getTab(name)
                                 .getLayout("C", BuiltInLayouts.kList).withPosition(4, 0)
                                 .withSize(2, 6).withProperties(Map.of("Label position", "LEFT"));
 
-                ShuffleboardLayout col7_8 = Shuffleboard.getTab(ll.getName())
+                ShuffleboardLayout col7_8 = Shuffleboard.getTab(name)
                                 .getLayout("D", BuiltInLayouts.kList).withPosition(6, 0)
                                 .withSize(2, 6).withProperties(Map.of("Label position", "LEFT"));
 
                 // columns 1 and 2
 
-                col1_2.addBoolean("tv (hasTarget)", () -> ll.ref.getIsTargetFound());
+                col1_2.addNumber("HeartBeat", () -> m_ll.getHeartbeat());
 
-                col1_2.addBoolean("Connected", () -> ll.isConnected());
+                col1_2.addBoolean(name + " hasTarget)", () -> m_ll.getIsTargetFound());
 
-                col1_2.addString("camMode ", () -> ll.getCamMode().toString());
+                col1_2.addBoolean(name + " Connected", () -> m_ll.isConnected());
 
-                col1_2.addString("ledMode", () -> ll.ref.getLEDMode().toString());
+                col1_2.addString(name + " Cam Mode ", () -> m_ll.getCamMode().toString());
 
-                col1_2.addString("stream", () -> ll.getStream().toString());
+                col1_2.addString(name + " Led Mode", () -> m_ll.getLEDMode().toString());
 
-                col1_2.addNumber("getpipe", () -> ll.getPipeline());
+                col1_2.addString(name + " Stream Mode", () -> m_ll.getStream().toString());
 
-                col1_2.addNumber("tl (Latency)", () -> ll.getPipelineLatency());
+                col1_2.addNumber(name + " Pipeline", () -> m_ll.getPipeline());
 
-                // cols 3 and 4
+                col1_2.addNumber(name + " Latency", () -> m_ll.getPipelineLatency());
 
-                col3_4.addNumber("tshort", () -> ll.ref.getBoundingBoxShortestSide());
+                // cols 3 and 4.
 
-                col3_4.addNumber("tlong", () -> ll.ref.getBoundingBoxLongestSide());
+                col3_4.addNumber(name + " BB Short", () -> m_ll.getBoundingBoxShortestSide());
 
-                col3_4.addNumber("tvert", () -> ll.ref.getBoundingBoxHeight());
+                col3_4.addNumber(name + " BB Long", () -> m_ll.getBoundingBoxLongestSide());
 
-                col3_4.addNumber("thor", () -> ll.ref.getBoundingBoxWidth());
+                col3_4.addNumber(name + " BB Height", () -> m_ll.getBoundingBoxHeight());
 
-                col3_4.addNumber("ta ", () -> ll.ref.getTargetArea());
+                col3_4.addNumber(name + " BB Width", () -> m_ll.getBoundingBoxWidth());
 
-                col3_4.addNumber("tx", () -> ll.ref.getdegRotationToTarget());
+                col3_4.addNumber(name + " BB Area ", () -> m_ll.getTargetArea());
 
-                col3_4.addNumber("ty", () -> ll.ref.getdegVerticalToTarget());
+                col3_4.addNumber(name + " Deg Rot", () -> m_ll.getdegRotationToTarget());
 
-                col3_4.addNumber("ts", () -> ll.ref.getSkew_Rotation());
+                col3_4.addNumber(name + " Deg Vert", () -> m_ll.getdegVerticalToTarget());
 
+                col3_4.addNumber(name + " Deg Skew", () -> m_ll.getSkew_Rotation());
 
-// cols 5 and 6
-
-//col5_6.addBoolean("Advanced On", ()->ll.ref.getAdvanced_RawCrosshair_X(0))
-
-
-
+                // cols 5 and 6
 
                 // cols 7 and 8
 
-                col7_8.addNumber("tid", () -> ll.getAprilTagID());
+                col7_8.addNumber(name + " Tag ID", () -> m_ll.getAprilTagID());
 
-                col7_8.addString("camtran", () -> ll.getCamTran().toString());
+                col7_8.addString(name + " Cam Tran3d", () -> m_ll.getCamTran().toString());
 
-                col7_8.addNumber("tclass", () -> ll.getNeuralClassID());
+                col7_8.addNumber(name + " Neur ID", () -> m_ll.getNeuralClassID());
 
-                col7_8.addDoubleArray("HSV tc", ()->ll.getAveCrossHairColor());
+                col7_8.addDoubleArray(name + " HSV tc", () -> m_ll.getAveCrossHairColor());
 
-        }
-
+        }}
 }

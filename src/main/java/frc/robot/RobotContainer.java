@@ -7,12 +7,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.oi.LimeLight.StreamType;
-import frc.robot.oi.LimeLightReflective.LedMode;
+import frc.robot.oi.LimeLight.LedMode;
 import frc.robot.subsystems.LimelightVision;
 
 public class RobotContainer {
   final LimelightVision llvis = new LimelightVision();
+
   private CommandXboxController testController = new CommandXboxController(0);
 
   public RobotContainer() {
@@ -20,8 +20,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    testController.a().whileTrue(llvis.cam15.ref.ChangeLEDMode(LedMode.kforceBlink));
-    testController.x().whileTrue(llvis.cam15.ref.ChangeLEDMode(LedMode.kpipeLine));
+    testController.a().whileTrue(llvis.cam15.ChangeLEDMode(LedMode.kforceBlink));
+    testController.x().whileTrue(llvis.cam15.ChangeLEDMode(LedMode.kpipeLine));
     testController.b().whileTrue(llvis.cam15.GetSnapShot());
 
     testController.y().whileTrue(llvis.cam15.ToggleCamMode());
@@ -32,6 +32,7 @@ public class RobotContainer {
 
     double[] crop2 = { -.1, .3, -.7, .3 };
     testController.start().whileTrue(llvis.cam15.ChangeCropRectangle(crop2));
+
   }
 
   public Command getAutonomousCommand() {
