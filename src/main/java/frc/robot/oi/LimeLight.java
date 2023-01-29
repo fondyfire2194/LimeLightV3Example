@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-
 public class LimeLight {
 
     public String m_tableName;
@@ -84,7 +83,7 @@ public class LimeLight {
 
         private int testCount;
         private int testCountLimitCheck = 3;
- 
+
         private double hbCount;
 
         private double lasthbcount;
@@ -114,15 +113,18 @@ public class LimeLight {
         }
 
     }
-/** */
+
+    /** */
     public String getName() {
         return m_tableName;
     }
-/** */
+
+    /** */
     public boolean isConnected() {
         return connected;
     }
-/** */
+
+    /** */
     public double getHeartbeat() {
         NetworkTableEntry tl = m_table.getEntry("hb");
         double hb = tl.getDouble(0.0);
@@ -223,7 +225,8 @@ public class LimeLight {
         currentStreamType = streamType;
         m_table.getEntry("stream").setValue(streamType.ordinal());
     }
-/** */
+
+    /** */
     public StreamType getStream() {
         int smode = (int) m_table.getEntry("stream").getDouble(0.);
         switch (smode) {
@@ -424,21 +427,24 @@ public class LimeLight {
         double x = txRaw.getDouble(0.0);
         return x;
     }
-/** */
+
+    /** */
     public double getAdvanced_degVerticalToTarget(int n) {
         String nt = "ty" + String.valueOf(n);
         NetworkTableEntry tyRaw = m_table.getEntry(nt);
         double y = tyRaw.getDouble(0.0);
         return y;
     }
-/** */
+
+    /** */
     public double getAdvanced_TargetArea(int n) {
         String nt = "ta" + String.valueOf(n);
         NetworkTableEntry taRaw = m_table.getEntry(nt);
         double a = taRaw.getDouble(0.0);
         return a;
     }
-/** */
+
+    /** */
     public double getAdvanced_Skew_Rotation(int n) {
         String nt = "ts" + String.valueOf(n);
         NetworkTableEntry tsRaw = m_table.getEntry(nt);
@@ -456,7 +462,8 @@ public class LimeLight {
         double x = cxRaw.getDouble(0.0);
         return x;
     }
-/** */
+
+    /** */
     public double getAdvanced_RawCrosshair_Y(int n) {
         String nt = "cy" + String.valueOf(n);
         NetworkTableEntry cyRaw = m_table.getEntry(nt);
@@ -464,11 +471,12 @@ public class LimeLight {
         return y;
     }
 
-/** */
-    public String getSendCornersOn(){
+    /** */
+    public String getSendCornersOn() {
         NetworkTableEntry value = m_table.getEntry("cornxy");
         return value.getName();
     }
+
     /**
      * Is only available if send corners is turned on
      * 
@@ -505,12 +513,55 @@ public class LimeLight {
      * @return Transform3d
      */
 
-    public Transform3d getRobotTransform()
-
-    {
-
+    public Transform3d getRobotTransform() {
         double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
         NetworkTableEntry value = m_table.getEntry("botpose");
+
+        double[] result = value.getDoubleArray(temp);
+
+        if (result.length == 6) {
+
+            tl3d = new Translation3d(result[0], result[1], result[2]);
+            for (int i = 3; i > 5; i++) {
+                result[i] = Units.degreesToRadians(result[i]);
+            }
+
+            r3d = new Rotation3d(result[3], result[4], result[5]);
+            tf3d = new Transform3d(tl3d, r3d);
+        } else
+            tf3d = new Transform3d();
+        return tf3d;
+    }
+
+    public Transform3d getRobotTransform_WPIBlue() {
+        double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
+        NetworkTableEntry value = m_table.getEntry("botpose_wpiblue");
+
+        double[] result = value.getDoubleArray(temp);
+
+        if (result.length == 6) {
+
+            tl3d = new Translation3d(result[0], result[1], result[2]);
+            for (int i = 3; i > 5; i++) {
+                result[i] = Units.degreesToRadians(result[i]);
+            }
+
+            r3d = new Rotation3d(result[3], result[4], result[5]);
+            tf3d = new Transform3d(tl3d, r3d);
+        } else
+            tf3d = new Transform3d();
+        return tf3d;
+    }
+
+    /**
+     * Returns pose of the April Tag
+     * 
+     * @return Transform3d
+     */
+
+    public Transform3d getRobotTransform_WPIRed() {
+        double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
+        NetworkTableEntry value = m_table.getEntry("botpose_wpired");
 
         double[] result = value.getDoubleArray(temp);
 
@@ -535,9 +586,75 @@ public class LimeLight {
      * 
      * @return
      */
-    public Transform3d getCamTran() {
+    public Transform3d getCameraPoseTargetSpace() {
         double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
-        NetworkTableEntry value = m_table.getEntry("camtran");
+        NetworkTableEntry value = m_table.getEntry("camerapose_targetspace");
+        double[] result = value.getDoubleArray(temp);
+        tl3d = new Translation3d(result[0], result[1], result[2]);
+        for (int i = 3; i > 5; i++) {
+            result[i] = Units.degreesToRadians(result[i]);
+        }
+        r3d = new Rotation3d(result[3], result[4], result[5]);
+        tf3d = new Transform3d(tl3d, r3d);
+
+        return tf3d;
+
+    }
+
+    /**
+     * camtran Camera transform in target space of primary apriltag or solvepnp
+     * target.
+     * NumberArray: Translation (x,y,z) Rotation(pitch,yaw,roll)
+     * 
+     * @return
+     */
+    public Transform3d getTargetPoseCameraSpace() {
+        double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
+        NetworkTableEntry value = m_table.getEntry("targetpose_cameraspace");
+        double[] result = value.getDoubleArray(temp);
+        tl3d = new Translation3d(result[0], result[1], result[2]);
+        for (int i = 3; i > 5; i++) {
+            result[i] = Units.degreesToRadians(result[i]);
+        }
+        r3d = new Rotation3d(result[3], result[4], result[5]);
+        tf3d = new Transform3d(tl3d, r3d);
+
+        return tf3d;
+
+    }
+
+    /**
+     * camtran Camera transform in target space of primary apriltag or solvepnp
+     * target.
+     * NumberArray: Translation (x,y,z) Rotation(pitch,yaw,roll)
+     * 
+     * @return
+     */
+    public Transform3d getTargetPoseRobotSpace() {
+        double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
+        NetworkTableEntry value = m_table.getEntry("targetpose_robotspace");
+        double[] result = value.getDoubleArray(temp);
+        tl3d = new Translation3d(result[0], result[1], result[2]);
+        for (int i = 3; i > 5; i++) {
+            result[i] = Units.degreesToRadians(result[i]);
+        }
+        r3d = new Rotation3d(result[3], result[4], result[5]);
+        tf3d = new Transform3d(tl3d, r3d);
+
+        return tf3d;
+
+    }
+
+    /**
+     * camtran Camera transform in target space of primary apriltag or solvepnp
+     * target.
+     * NumberArray: Translation (x,y,z) Rotation(pitch,yaw,roll)
+     * 
+     * @return
+     */
+    public Transform3d getRobotPoseTargetSpace() {
+        double[] temp = { 0, 0, 0, 0, 0, 0 };// default for getEntry
+        NetworkTableEntry value = m_table.getEntry("botpose_targetspace");
         double[] result = value.getDoubleArray(temp);
         tl3d = new Translation3d(result[0], result[1], result[2]);
         for (int i = 3; i > 5; i++) {
@@ -561,7 +678,8 @@ public class LimeLight {
         int value = (int) id.getDouble(0.0f);
         return value;
     }
-/** */
+
+    /** */
     public double[] getAveCrossHairColor() {
         double[] temp = { 0, 0, 0 };
         NetworkTableEntry value = m_table.getEntry("tc");
@@ -607,7 +725,7 @@ public class LimeLight {
      * @return
      */
     public Command GetSnapShot() {
-        return new SequentialCommandGroup(new InstantCommand(() ->takeSnapshot(1)),
+        return new SequentialCommandGroup(new InstantCommand(() -> takeSnapshot(1)),
                 new WaitCommand(.1),
                 new InstantCommand(() -> takeSnapshot(0)));
     }
@@ -623,7 +741,7 @@ public class LimeLight {
     public Command ToggleCamMode() {
 
         return new ConditionalCommand(
-                new InstantCommand(() ->setCamMode(CamMode.kdriver)),
+                new InstantCommand(() -> setCamMode(CamMode.kdriver)),
                 new InstantCommand(() -> setCamMode(CamMode.kvision)),
                 () -> (getCamMode() == CamMode.kvision));
     }
@@ -633,13 +751,8 @@ public class LimeLight {
         return new InstantCommand(() -> setCropRectangle(sizes));
     }
 
-    
     public Command ChangeLEDMode(LedMode mode) {
         return new InstantCommand(() -> setLEDMode(mode));
     }
 
-
 }
-
-
-
